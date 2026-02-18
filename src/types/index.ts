@@ -101,3 +101,88 @@ export interface AdminStats {
   avg_queue_length: number
   gpu_utilization_avg: number
 }
+
+// Model types
+
+export interface PrivateModel {
+  id: number
+  name: string
+  type: 'checkpoint' | 'lora' | 'vae' | 'embedding'
+  size_bytes: number
+  uploaded_at: string
+  storage_cost_per_day: number
+}
+
+// Admin model (includes user info and visibility)
+export interface AdminModel extends PrivateModel {
+  user_id: number
+  username: string
+  visibility: 'base' | 'vip' | 'private'
+  status: 'active' | 'pending' | 'disabled'
+}
+
+// Subscription types
+
+export interface Subscription {
+  tier: string
+  status: 'active' | 'expired' | 'cancelled'
+  started_at: string
+  expires_at: string
+  auto_renew: boolean
+}
+
+// Recharge / Finance types
+
+export interface RechargeRecord {
+  id: number
+  user_id: number
+  username?: string
+  amount: number
+  currency: string
+  payment_method: string
+  status: 'pending' | 'completed' | 'failed' | 'refunded'
+  created_at: string
+  completed_at?: string
+}
+
+export interface FinanceStats {
+  total_revenue: number
+  revenue_today: number
+  revenue_this_week: number
+  revenue_this_month: number
+  total_recharges: number
+  avg_recharge_amount: number
+}
+
+// System config types
+
+export interface SystemConfig {
+  billing: {
+    gpu_price_per_second: number
+    storage_price_per_gb_day: number
+    bandwidth_price_per_gb: number
+  }
+  instance_pool: {
+    max_queue_per_instance: number
+    health_check_interval_seconds: number
+    auto_scale_enabled: boolean
+  }
+  system: {
+    max_upload_size_mb: number
+    allowed_model_types: string[]
+    maintenance_mode: boolean
+  }
+}
+
+// Log types
+
+export interface SystemLog {
+  id: number
+  level: 'info' | 'warn' | 'error'
+  source: string
+  message: string
+  user_id?: number
+  username?: string
+  created_at: string
+  details?: Record<string, unknown>
+}

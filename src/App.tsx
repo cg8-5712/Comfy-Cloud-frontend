@@ -7,10 +7,16 @@ import DashboardPage from './pages/DashboardPage'
 import RechargePage from './pages/RechargePage'
 import UsagePage from './pages/UsagePage'
 import SettingsPage from './pages/SettingsPage'
+import ModelsPage from './pages/ModelsPage'
+import SubscriptionPage from './pages/SubscriptionPage'
 import AdminLayout from './layouts/AdminLayout'
 import AdminDashboardPage from './pages/admin/AdminDashboardPage'
 import AdminUsersPage from './pages/admin/AdminUsersPage'
 import AdminInstancesPage from './pages/admin/AdminInstancesPage'
+import AdminModelsPage from './pages/admin/AdminModelsPage'
+import AdminFinancePage from './pages/admin/AdminFinancePage'
+import AdminConfigPage from './pages/admin/AdminConfigPage'
+import AdminLogsPage from './pages/admin/AdminLogsPage'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
@@ -36,6 +42,8 @@ function App() {
         <Route index element={<DashboardPage />} />
         <Route path="recharge" element={<RechargePage />} />
         <Route path="usage" element={<UsagePage />} />
+        <Route path="models" element={<ModelsPage />} />
+        <Route path="subscription" element={<SubscriptionPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="/" element={<Navigate to="/login" replace />} />
@@ -50,6 +58,10 @@ function App() {
         <Route index element={<AdminDashboardPage />} />
         <Route path="users" element={<AdminUsersPage />} />
         <Route path="instances" element={<AdminInstancesPage />} />
+        <Route path="models" element={<AdminModelsPage />} />
+        <Route path="finance" element={<AdminFinancePage />} />
+        <Route path="config" element={<AdminConfigPage />} />
+        <Route path="logs" element={<AdminLogsPage />} />
       </Route>
     </Routes>
   )

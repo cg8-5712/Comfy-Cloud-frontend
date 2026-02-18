@@ -11,7 +11,14 @@ import type {
   TierConfig,
   AdminUser,
   AdminStats,
-  ComfyInstance
+  ComfyInstance,
+  PrivateModel,
+  AdminModel,
+  Subscription,
+  RechargeRecord,
+  FinanceStats,
+  SystemConfig,
+  SystemLog,
 } from '@/types'
 import { mockApi } from './mock'
 
@@ -120,6 +127,86 @@ export const adminApi = {
     USE_MOCK
       ? wrapMock(mockApi.admin.getInstances())
       : api.get<ComfyInstance[]>('/admin/instances'),
+}
+
+export const modelApi = {
+  getPrivateModels: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.models.getPrivateModels())
+      : api.get<{ models: PrivateModel[] }>('/models/private'),
+
+  uploadModel: (file: File, type: PrivateModel['type']) => {
+    if (USE_MOCK) return wrapMock(mockApi.models.uploadModel(file.name, type))
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('type', type)
+    return api.post<PrivateModel>('/models/upload', formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+  },
+
+  deleteModel: (id: number) =>
+    USE_MOCK
+      ? wrapMock(mockApi.models.deleteModel(id))
+      : api.delete(`/models/private/${id}`),
+}
+
+export const subscriptionApi = {
+  getSubscription: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.subscription.getSubscription())
+      : api.get<Subscription>('/subscription'),
+
+  upgrade: (targetTier: string) =>
+    USE_MOCK
+      ? wrapMock(mockApi.subscription.upgrade(targetTier))
+      : api.post<Subscription>('/subscription/upgrade', { target_tier: targetTier }),
+}
+
+export const adminModelApi = {
+  getModels: (params?: { visibility?: string; limit?: number; offset?: number }) =>
+    USE_MOCK
+      ? wrapMock(mockApi.adminModels.getModels(params))
+      : api.get<{ models: AdminModel[]; total: number }>('/admin/models', { params }),
+
+  updateModel: (id: number, data: Partial<Pick<AdminModel, 'visibility' | 'status'>>) =>
+    USE_MOCK
+      ? wrapMock(mockApi.adminModels.updateModel(id, data))
+      : api.patch<AdminModel>(`/admin/models/${id}`, data),
+
+  deleteModel: (id: number) =>
+    USE_MOCK
+      ? wrapMock(mockApi.adminModels.deleteModel(id))
+      : api.delete(`/admin/models/${id}`),
+}
+
+export const financeApi = {
+  getStats: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.finance.getStats())
+      : api.get<FinanceStats>('/admin/finance/stats'),
+
+  getRechargeRecords: (params?: { limit?: number; offset?: number }) =>
+    USE_MOCK
+      ? wrapMock(mockApi.finance.getRechargeRecords(params))
+      : api.get<{ records: RechargeRecord[]; total: number }>('/admin/finance/recharges', { params }),
+}
+
+export const configApi = {
+  getConfig: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.config.getConfig())
+      : api.get<SystemConfig>('/admin/config'),
+
+  updateConfig: (data: Partial<SystemConfig>) =>
+    USE_MOCK
+      ? wrapMock(mockApi.config.updateConfig(data))
+      : api.patch<SystemConfig>('/admin/config', data),
+}
+
+export const logApi = {
+  getLogs: (params?: { level?: string; source?: string; limit?: number; offset?: number }) =>
+    USE_MOCK
+      ? wrapMock(mockApi.logs.getLogs(params))
+      : api.get<{ logs: SystemLog[]; total: number }>('/admin/logs', { params }),
 }
 
 export default api

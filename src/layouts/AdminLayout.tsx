@@ -17,6 +17,10 @@ const navItems = [
   { path: '/admin', label: '概览', end: true },
   { path: '/admin/users', label: '用户管理' },
   { path: '/admin/instances', label: '实例监控' },
+  { path: '/admin/models', label: '模型管理' },
+  { path: '/admin/finance', label: '财务报表' },
+  { path: '/admin/config', label: '系统配置' },
+  { path: '/admin/logs', label: '日志' },
 ]
 
 export default function AdminLayout() {
