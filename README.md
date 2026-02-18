@@ -48,97 +48,156 @@ frontend/
 ### 安装依赖
 
 ```bash
-yarn install
+npm install
 ```
 
-### 启动开发服务器
+### 启动开发服务器（Mock 模式）
+
+开发环境默认使用 mock API，无需后端即可运行：
 
 ```bash
-yarn dev
+npm run dev
 ```
 
-访问 http://localhost:3000
+访问 http://localhost:5173
+
+#### 测试账号
+
+**普通用户：**
+- 用户名：任意
+- 密码：`demo` 或 `123456`
+
+**管理员：**
+- 用户名：`admin`
+- 密码：`admin`
+
+登录后可以访问：
+- 用户面板：`/account` （仪表盘、充值、使用记录、设置）
+- 管理后台：`/admin` （概览、用户管理、实例监控）
+
+### 使用真实 API
+
+修改 `.env.development` 文件：
+
+```env
+VITE_USE_MOCK_API=false
+```
+
+或在启动时设置环境变量：
+
+```bash
+VITE_USE_MOCK_API=false npm run dev
+```
 
 ### 构建生产版本
 
 ```bash
-yarn build
+npm run build
 ```
 
 ### 预览生产构建
 
 ```bash
-yarn preview
+npm run preview
 ```
+
+## Mock 数据说明
+
+Mock 数据定义在 `src/api/mock.ts`，包含：
+
+- 2 个用户（普通用户 + 管理员）
+- 3 个订阅等级（基础版、专业版、企业版）
+- 15 条使用记录
+- 25 个模拟用户（管理后台）
+- 3 个 ComfyUI 实例
+
+所有 API 调用都有 300ms 延迟模拟网络请求。
 
 ## 已完成功能
 
 ### Phase 2.6.1 - 认证页面 ✅
 
 - [x] 登录页面 (`/login`)
-  - Glassmorphism 设计风格
-  - 用户名/密码登录
-  - 记住我选项
-  - 忘记密码链接
-  - 动画背景和浮动元素
-  - 响应式设计
-
 - [x] 注册页面 (`/register`)
-  - 用户名、邮箱、密码输入
-  - 密码确认验证
-  - 表单验证
-  - 错误提示
+- [x] Glassmorphism 设计风格
+- [x] 响应式设计
 
-### 核心功能
+### Phase 2.6.2 - 账户管理页面 ✅
+
+- [x] 仪表盘 (`/account`)
+  - 账户余额、订阅等级、存储空间、快速启动
+  - 最近活动、快捷操作
+- [x] 充值页面 (`/account/recharge`)
+  - 预设金额、自定义金额
+  - 订阅方案（动态从后端获取）
+- [x] 使用记录 (`/account/usage`)
+  - 统计概览、记录表格、分页
+- [x] 个人设置 (`/account/settings`)
+  - 个人信息、修改密码、危险操作
+
+### Phase 2.6.3 - Admin 后台 ✅
+
+- [x] 管理概览 (`/admin`)
+  - 7 个统计卡片
+  - 使用趋势图表（ChartAreaInteractive）
+- [x] 用户管理 (`/admin/users`)
+  - 用户列表、搜索、分页
+  - 编辑用户（等级、状态、角色、余额）
+- [x] 实例监控 (`/admin/instances`)
+  - 实例状态、GPU 利用率、队列长度
+  - 实例详情卡片
+
+### 核心功能 ✅
 
 - [x] 状态管理 (Zustand)
-  - 用户认证状态
-  - Token 管理
-  - 余额信息
-
+  - authStore: 用户认证、Token 管理
+  - tierStore: 订阅等级配置（从后端获取）
 - [x] API 客户端 (Axios)
   - 自动注入 Token
   - 401 自动重定向
-  - 错误处理
-
+  - Mock 模式支持
 - [x] 路由保护
   - 未登录重定向到登录页
-  - 登录后跳转到账户页面
-
-## 待开发功能
-
-### Phase 2.6.2 - 账户管理页面
-
-- [ ] 账户概览 (`/account/dashboard`)
-- [ ] 充值页面 (`/account/recharge`)
-- [ ] 使用记录 (`/account/usage`)
-- [ ] 订阅管理 (`/account/subscription`)
-- [ ] 个人设置 (`/account/settings`)
-
-### Phase 2.6.3 - Admin 后台
-
-- [ ] 用户管理 (`/admin/users`)
-- [ ] 实例监控 (`/admin/instances`)
-- [ ] 计费管理 (`/admin/billing`)
-- [ ] 系统设置 (`/admin/settings`)
+  - 嵌套路由（AccountLayout、AdminLayout）
 
 ## 环境变量
 
-创建 `.env` 文件：
+### 开发环境 (`.env.development`)
+
+```env
+# 启用 Mock API（默认）
+VITE_USE_MOCK_API=true
+```
+
+### 生产环境 (`.env.production`)
+
+```env
+# 使用真实 API
+VITE_USE_MOCK_API=false
+```
+
+如需自定义 API 地址，可添加：
 
 ```env
 VITE_API_BASE_URL=http://localhost:8080/api
-VITE_COMFYUI_URL=http://localhost:8188
 ```
 
 ## API 集成
 
-后端 API 地址通过 Vite 代理配置：
+前端支持两种模式：
+
+### Mock 模式（开发）
+
+通过 `src/api/mock.ts` 提供模拟数据，无需后端即可运行。
+
+### 真实 API 模式（生产）
+
+后端 API 地址默认为 `/api`，可通过 Vite 代理配置：
 
 ```typescript
 // vite.config.ts
 server: {
-  port: 3000,
+  port: 5173,
   proxy: {
     '/api': {
       target: 'http://localhost:8080',
@@ -147,6 +206,8 @@ server: {
   }
 }
 ```
+
+API 规范详见 [API_SPECIFICATION.md](../API_SPECIFICATION.md)。
 
 ## 设计规范
 

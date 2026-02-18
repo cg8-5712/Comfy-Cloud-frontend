@@ -18,6 +18,7 @@ export interface User {
   storage_used: number
   storage_limit: number
   created_at: string
+  role?: 'user' | 'admin'
 }
 
 export interface LoginRequest {

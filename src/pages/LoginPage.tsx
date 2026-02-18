@@ -28,7 +28,13 @@ export default function LoginPage() {
       if (redirect) {
         window.location.href = decodeURIComponent(redirect)
       } else {
-        navigate('/account')
+        // Get user from store to check role
+        const user = useAuthStore.getState().user
+        if (user?.role === 'admin') {
+          navigate('/admin')
+        } else {
+          navigate('/account')
+        }
       }
     } catch (err) {
       setError('登录失败，请检查用户名和密码')

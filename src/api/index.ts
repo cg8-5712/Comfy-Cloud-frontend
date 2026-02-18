@@ -13,6 +13,10 @@ import type {
   AdminStats,
   ComfyInstance
 } from '@/types'
+import { mockApi } from './mock'
+
+// Check if mock mode is enabled
+const USE_MOCK = import.meta.env.VITE_USE_MOCK_API === 'true'
 
 const api = axios.create({
   baseURL: '/api',
@@ -42,46 +46,80 @@ api.interceptors.response.use(
   }
 )
 
+// Helper to wrap mock responses in axios-like format
+const wrapMock = <T>(promise: Promise<T>) => promise.then((data) => ({ data }))
+
 export const authApi = {
   login: (data: LoginRequest) =>
-    api.post<LoginResponse>('/auth/login', data),
+    USE_MOCK
+      ? wrapMock(mockApi.auth.login(data.username, data.password))
+      : api.post<LoginResponse>('/auth/login', data),
 
   register: (data: RegisterRequest) =>
-    api.post<RegisterResponse>('/auth/register', data),
+    USE_MOCK
+      ? wrapMock(mockApi.auth.register(data.username, data.email))
+      : api.post<RegisterResponse>('/auth/register', data),
 
-  logout: () => api.post('/auth/logout'),
+  logout: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.auth.logout())
+      : api.post('/auth/logout'),
 
-  getCurrentUser: () => api.get<User>('/auth/me')
+  getCurrentUser: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.auth.getCurrentUser())
+      : api.get<User>('/auth/me')
 }
 
 export const userApi = {
-  getBalance: () => api.get<Balance>('/user/balance'),
+  getBalance: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.user.getBalance())
+      : api.get<Balance>('/user/balance'),
 
   getUsageRecords: (params?: {
     start_date?: string
     end_date?: string
     limit?: number
     offset?: number
-  }) => api.get<{ records: UsageRecord[]; total: number }>('/usage/records', { params }),
+  }) =>
+    USE_MOCK
+      ? wrapMock(mockApi.user.getUsageRecords(params))
+      : api.get<{ records: UsageRecord[]; total: number }>('/usage/records', { params }),
 
   getUsageStats: (period: 'day' | 'week' | 'month' | 'year') =>
-    api.get<UsageStats>('/usage/stats', { params: { period } })
+    USE_MOCK
+      ? wrapMock(mockApi.user.getUsageStats(period))
+      : api.get<UsageStats>('/usage/stats', { params: { period } })
 }
 
 export const tierApi = {
-  getTiers: () => api.get<TierConfig[]>('/tiers'),
+  getTiers: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.tier.getTiers())
+      : api.get<TierConfig[]>('/tiers'),
 }
 
 export const adminApi = {
-  getStats: () => api.get<AdminStats>('/admin/stats'),
+  getStats: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.admin.getStats())
+      : api.get<AdminStats>('/admin/stats'),
 
   getUsers: (params?: { limit?: number; offset?: number; search?: string }) =>
-    api.get<{ users: AdminUser[]; total: number }>('/admin/users', { params }),
+    USE_MOCK
+      ? wrapMock(mockApi.admin.getUsers(params))
+      : api.get<{ users: AdminUser[]; total: number }>('/admin/users', { params }),
 
   updateUser: (id: number, data: Partial<Pick<AdminUser, 'tier' | 'status' | 'role' | 'balance'>>) =>
-    api.patch<AdminUser>(`/admin/users/${id}`, data),
+    USE_MOCK
+      ? wrapMock(mockApi.admin.updateUser(id, data))
+      : api.patch<AdminUser>(`/admin/users/${id}`, data),
 
-  getInstances: () => api.get<ComfyInstance[]>('/admin/instances'),
+  getInstances: () =>
+    USE_MOCK
+      ? wrapMock(mockApi.admin.getInstances())
+      : api.get<ComfyInstance[]>('/admin/instances'),
 }
 
 export default api

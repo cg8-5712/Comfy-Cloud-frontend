@@ -1,0 +1,289 @@
+import type {
+  LoginResponse,
+  RegisterResponse,
+  User,
+  Balance,
+  UsageRecord,
+  UsageStats,
+  TierConfig,
+  AdminUser,
+  AdminStats,
+  ComfyInstance,
+} from '@/types'
+
+// Mock user data
+const mockUser: User = {
+  id: 1,
+  username: 'demo_user',
+  email: 'demo@example.com',
+  tier: 'pro',
+  balance: 150.50,
+  storage_used: 5.2,
+  storage_limit: 50,
+  created_at: '2024-01-15T08:30:00Z',
+  role: 'user',
+}
+
+const mockAdminUser: User = {
+  id: 999,
+  username: 'admin',
+  email: 'admin@example.com',
+  tier: 'enterprise',
+  balance: 9999.99,
+  storage_used: 1.5,
+  storage_limit: 200,
+  created_at: '2023-01-01T00:00:00Z',
+  role: 'admin',
+}
+
+// Mock token
+const mockToken = 'mock_jwt_token_' + Date.now()
+
+// Mock balance
+const mockBalance: Balance = {
+  balance: 150.50,
+  currency: 'CNY',
+  last_updated: new Date().toISOString(),
+}
+
+// Mock tiers
+const mockTiers: TierConfig[] = [
+  {
+    key: 'basic',
+    label: '基础版',
+    color: 'bg-muted text-muted-foreground',
+    price: '免费',
+    features: ['每月 100 次任务', '5 GB 存储空间', '基础模型访问', '社区支持'],
+    popular: false,
+  },
+  {
+    key: 'pro',
+    label: '专业版',
+    color: 'bg-primary/10 text-primary',
+    price: '¥99/月',
+    features: ['无限任务', '50 GB 存储空间', 'VIP 模型访问', '优先队列', '邮件支持'],
+    popular: true,
+  },
+  {
+    key: 'enterprise',
+    label: '企业版',
+    color: 'bg-amber-500/10 text-amber-600',
+    price: '¥299/月',
+    features: ['无限任务', '200 GB 存储空间', '全部模型访问', '最高优先级', '专属支持', '团队协作'],
+    popular: false,
+  },
+]
+
+// Mock usage records
+const mockUsageRecords: UsageRecord[] = Array.from({ length: 15 }, (_, i) => ({
+  id: i + 1,
+  task_id: `task_${Math.random().toString(36).substr(2, 9)}`,
+  type: ['gpu_usage', 'storage', 'bandwidth'][i % 3] as UsageRecord['type'],
+  started_at: new Date(Date.now() - (15 - i) * 86400000).toISOString(),
+  ended_at: new Date(Date.now() - (15 - i) * 86400000 + 300000).toISOString(),
+  duration_seconds: 300 + Math.floor(Math.random() * 600),
+  cost: 0.5 + Math.random() * 2,
+  details: {
+    gpu_type: 'RTX 4090',
+    model: 'sd_v1.5',
+  },
+}))
+
+// Mock usage stats
+const mockUsageStats: UsageStats = {
+  period: 'month',
+  start_date: new Date(Date.now() - 30 * 86400000).toISOString(),
+  end_date: new Date().toISOString(),
+  gpu_seconds: 3600,
+  storage_gb_hours: 240,
+  total_cost: 25.50,
+  task_count: 150,
+}
+
+// Mock admin users
+const mockAdminUsers: AdminUser[] = Array.from({ length: 25 }, (_, i) => ({
+  id: i + 1,
+  username: `user_${i + 1}`,
+  email: `user${i + 1}@example.com`,
+  tier: ['basic', 'pro', 'enterprise'][i % 3] as string,
+  balance: Math.random() * 500,
+  storage_used: Math.random() * 50,
+  storage_limit: [5, 50, 200][i % 3],
+  created_at: new Date(Date.now() - Math.random() * 365 * 86400000).toISOString(),
+  status: ['active', 'suspended', 'banned'][Math.floor(Math.random() * 10) > 8 ? Math.floor(Math.random() * 3) : 0] as AdminUser['status'],
+  role: i === 0 ? 'admin' : 'user',
+  last_login_at: new Date(Date.now() - Math.random() * 7 * 86400000).toISOString(),
+}))
+
+// Mock admin stats
+const mockAdminStats: AdminStats = {
+  total_users: 1250,
+  active_users_today: 342,
+  total_revenue: 125680.50,
+  total_tasks_today: 1580,
+  instances_online: 3,
+  instances_total: 3,
+  avg_queue_length: 2.3,
+  gpu_utilization_avg: 68.5,
+}
+
+// Mock instances
+const mockInstances: ComfyInstance[] = [
+  {
+    id: 'comfyui-1',
+    url: 'http://comfyui-1:8188',
+    name: 'ComfyUI Instance 1',
+    status: 'online',
+    gpu_type: 'RTX 4090',
+    queue_size: 2,
+    current_task: 'task_abc123',
+    uptime_seconds: 345600,
+    gpu_utilization: 75,
+    vram_used_gb: 18.5,
+    vram_total_gb: 24,
+  },
+  {
+    id: 'comfyui-2',
+    url: 'http://comfyui-2:8188',
+    name: 'ComfyUI Instance 2',
+    status: 'busy',
+    gpu_type: 'RTX 4090',
+    queue_size: 5,
+    current_task: 'task_def456',
+    uptime_seconds: 345600,
+    gpu_utilization: 92,
+    vram_used_gb: 22.1,
+    vram_total_gb: 24,
+  },
+  {
+    id: 'comfyui-3',
+    url: 'http://comfyui-3:8188',
+    name: 'ComfyUI Instance 3',
+    status: 'online',
+    gpu_type: 'RTX 4090',
+    queue_size: 0,
+    uptime_seconds: 345600,
+    gpu_utilization: 38,
+    vram_used_gb: 8.2,
+    vram_total_gb: 24,
+  },
+]
+
+// Simulate API delay
+const delay = (ms: number = 300) => new Promise((resolve) => setTimeout(resolve, ms))
+
+// Mock API functions
+export const mockApi = {
+  auth: {
+    login: async (username: string, password: string) => {
+      await delay()
+      // Admin login
+      if (username === 'admin' && password === 'admin') {
+        localStorage.setItem('mock_current_user', 'admin')
+        return { token: mockToken, user: mockAdminUser } as LoginResponse
+      }
+      // Regular user login (any username except 'admin', password must be 'demo' or '123456')
+      if (username !== 'admin' && (password === 'demo' || password === '123456')) {
+        localStorage.setItem('mock_current_user', 'user')
+        return { token: mockToken, user: mockUser } as LoginResponse
+      }
+      throw new Error('Invalid credentials')
+    },
+
+    register: async (username: string, email: string) => {
+      await delay()
+      const newUser: User = {
+        ...mockUser,
+        id: Math.floor(Math.random() * 10000),
+        username,
+        email,
+        tier: 'basic',
+        balance: 0,
+        storage_limit: 5,
+        created_at: new Date().toISOString(),
+      }
+      return { token: mockToken, user: newUser } as RegisterResponse
+    },
+
+    logout: async () => {
+      await delay(100)
+      localStorage.removeItem('mock_current_user')
+      return { message: 'Logged out successfully' }
+    },
+
+    getCurrentUser: async () => {
+      await delay()
+      // Check if there's a stored user type
+      const storedUser = localStorage.getItem('mock_current_user')
+      if (storedUser === 'admin') {
+        return mockAdminUser
+      }
+      return mockUser
+    },
+  },
+
+  user: {
+    getBalance: async () => {
+      await delay()
+      return mockBalance
+    },
+
+    getUsageRecords: async (params?: { start_date?: string; end_date?: string; limit?: number; offset?: number }) => {
+      await delay()
+      const offset = params?.offset || 0
+      const limit = params?.limit || 50
+      return {
+        records: mockUsageRecords.slice(offset, offset + limit),
+        total: mockUsageRecords.length,
+      }
+    },
+
+    getUsageStats: async (period: 'day' | 'week' | 'month' | 'year') => {
+      await delay()
+      return { ...mockUsageStats, period }
+    },
+  },
+
+  tier: {
+    getTiers: async () => {
+      await delay()
+      return mockTiers
+    },
+  },
+
+  admin: {
+    getStats: async () => {
+      await delay()
+      return mockAdminStats
+    },
+
+    getUsers: async (params?: { limit?: number; offset?: number; search?: string }) => {
+      await delay()
+      const offset = params?.offset || 0
+      const limit = params?.limit || 20
+      let filtered = mockAdminUsers
+      if (params?.search) {
+        const s = params.search.toLowerCase()
+        filtered = mockAdminUsers.filter(
+          (u) => u.username.toLowerCase().includes(s) || u.email.toLowerCase().includes(s)
+        )
+      }
+      return {
+        users: filtered.slice(offset, offset + limit),
+        total: filtered.length,
+      }
+    },
+
+    updateUser: async (id: number, data: Partial<Pick<AdminUser, 'tier' | 'status' | 'role' | 'balance'>>) => {
+      await delay()
+      const user = mockAdminUsers.find((u) => u.id === id)
+      if (!user) throw new Error('User not found')
+      return { ...user, ...data }
+    },
+
+    getInstances: async () => {
+      await delay()
+      return mockInstances
+    },
+  },
+}
