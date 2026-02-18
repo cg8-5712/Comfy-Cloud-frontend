@@ -1,4 +1,13 @@
-export type SubscriptionTier = 'basic' | 'pro' | 'enterprise'
+export type SubscriptionTier = string
+
+export interface TierConfig {
+  key: string
+  label: string
+  color: string        // badge 样式类，如 'bg-primary/10 text-primary'
+  price: string        // 显示价格，如 '¥99/月' 或 '免费'
+  features: string[]
+  popular?: boolean
+}
 
 export interface User {
   id: number
@@ -57,4 +66,37 @@ export interface UsageStats {
   storage_gb_hours: number
   total_cost: number
   task_count: number
+}
+
+// Admin types
+
+export interface AdminUser extends User {
+  status: 'active' | 'suspended' | 'banned'
+  role: 'user' | 'admin'
+  last_login_at: string
+}
+
+export interface ComfyInstance {
+  id: string
+  url: string
+  name: string
+  status: 'online' | 'offline' | 'busy'
+  gpu_type: string
+  queue_size: number
+  current_task?: string
+  uptime_seconds: number
+  gpu_utilization: number
+  vram_used_gb: number
+  vram_total_gb: number
+}
+
+export interface AdminStats {
+  total_users: number
+  active_users_today: number
+  total_revenue: number
+  total_tasks_today: number
+  instances_online: number
+  instances_total: number
+  avg_queue_length: number
+  gpu_utilization_avg: number
 }

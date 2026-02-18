@@ -7,7 +7,11 @@ import type {
   User,
   Balance,
   UsageRecord,
-  UsageStats
+  UsageStats,
+  TierConfig,
+  AdminUser,
+  AdminStats,
+  ComfyInstance
 } from '@/types'
 
 const api = axios.create({
@@ -62,6 +66,22 @@ export const userApi = {
 
   getUsageStats: (period: 'day' | 'week' | 'month' | 'year') =>
     api.get<UsageStats>('/usage/stats', { params: { period } })
+}
+
+export const tierApi = {
+  getTiers: () => api.get<TierConfig[]>('/tiers'),
+}
+
+export const adminApi = {
+  getStats: () => api.get<AdminStats>('/admin/stats'),
+
+  getUsers: (params?: { limit?: number; offset?: number; search?: string }) =>
+    api.get<{ users: AdminUser[]; total: number }>('/admin/users', { params }),
+
+  updateUser: (id: number, data: Partial<Pick<AdminUser, 'tier' | 'status' | 'role' | 'balance'>>) =>
+    api.patch<AdminUser>(`/admin/users/${id}`, data),
+
+  getInstances: () => api.get<ComfyInstance[]>('/admin/instances'),
 }
 
 export default api
