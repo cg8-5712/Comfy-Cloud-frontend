@@ -10,7 +10,23 @@ export default function AdminInstancesPage() {
   const [instances, setInstances] = useState<ComfyInstance[]>([])
 
   const load = () => {
-    adminApi.getInstances().then(({ data }) => setInstances(data)).catch(() => {})
+    adminApi.getInstances().then(({ data }) => {
+      // 后端返回的字段与前端类型不完全匹配，补充默认值
+      const normalized = (Array.isArray(data) ? data : []).map((inst: any) => ({
+        id: inst.id ?? '',
+        url: inst.url ?? '',
+        name: inst.name ?? '',
+        status: inst.status === 'active' ? 'online' : inst.status === 'inactive' ? 'offline' : (inst.status ?? 'offline'),
+        gpu_type: inst.gpu_type ?? `GPU #${inst.gpu_id ?? 0}`,
+        queue_size: inst.queue_size ?? 0,
+        current_task: inst.current_task,
+        uptime_seconds: inst.uptime_seconds ?? 0,
+        gpu_utilization: inst.gpu_utilization ?? 0,
+        vram_used_gb: inst.vram_used_gb ?? 0,
+        vram_total_gb: inst.vram_total_gb ?? 0,
+      }))
+      setInstances(normalized)
+    }).catch(() => {})
   }
 
   useEffect(() => { load() }, [])

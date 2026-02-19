@@ -98,11 +98,11 @@ export default function AdminConfigPage() {
             </div>
             <div className="space-y-2">
               <Label>允许的模型类型</Label>
-              <p className="text-sm text-muted-foreground pt-2">
-                {config.system.allowed_model_types.map((t) => (
+              <div className="text-sm text-muted-foreground pt-2">
+                {(config.system.allowed_model_types || []).map((t) => (
                   <Badge key={t} variant="outline" className="mr-1">{t}</Badge>
                 ))}
-              </p>
+              </div>
             </div>
             <div className="space-y-2">
               <Label>维护模式</Label>
