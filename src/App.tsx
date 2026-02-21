@@ -26,6 +26,17 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, user } = useAuthStore()
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />
+  }
+  if (user && user.role !== 'admin') {
+    return <Navigate to="/account" replace />
+  }
+  return <>{children}</>
+}
+
 function App() {
   return (
     <Routes>
@@ -50,9 +61,9 @@ function App() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute>
+          <AdminRoute>
             <AdminLayout />
-          </ProtectedRoute>
+          </AdminRoute>
         }
       >
         <Route index element={<AdminDashboardPage />} />
