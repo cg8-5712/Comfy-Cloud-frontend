@@ -96,7 +96,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground mb-3">打开 ComfyUI 开始创作</p>
-            <Button size="sm" onClick={() => window.location.href = '/comfy/'} className="w-full">
+            <Button size="sm" onClick={() => window.location.href = import.meta.env.VITE_COMFY_URL || '/comfy/'} className="w-full">
               启动 ComfyUI
             </Button>
           </CardContent>
@@ -131,7 +131,7 @@ export default function DashboardPage() {
               <Button variant="outline" size="sm" onClick={() => navigate('/account/recharge')}>
                 充值余额
               </Button>
-              <Button variant="outline" size="sm" onClick={() => window.location.href = '/comfy/'}>
+              <Button variant="outline" size="sm" onClick={() => window.location.href = import.meta.env.VITE_COMFY_URL || '/comfy/'}>
                 打开 ComfyUI
               </Button>
               <Button variant="outline" size="sm" onClick={() => navigate('/account/usage')}>

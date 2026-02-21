@@ -146,7 +146,7 @@ export default function AccountLayout() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => window.location.href = '/comfy/'}
+              onClick={() => window.location.href = import.meta.env.VITE_COMFY_URL || '/comfy/'}
               className="gap-1.5"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
