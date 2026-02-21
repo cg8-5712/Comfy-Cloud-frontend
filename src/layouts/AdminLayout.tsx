@@ -25,13 +25,25 @@ const navItems = [
 
 export default function AdminLayout() {
   const navigate = useNavigate()
-  const { user, isAuthenticated, logout } = useAuthStore()
+  const { user, isAuthenticated, logout, fetchUser } = useAuthStore()
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate('/login', { replace: true })
+      return
+    }
+    // 刷新页面时 user 为 null，需要重新获取
+    if (!user) {
+      fetchUser()
     }
   }, [isAuthenticated])
+
+  useEffect(() => {
+    // user 加载完成后检查 role
+    if (user && user.role !== 'admin') {
+      navigate('/account', { replace: true })
+    }
+  }, [user])
 
   const handleLogout = () => {
     logout()
